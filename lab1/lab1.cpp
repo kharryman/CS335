@@ -35,6 +35,7 @@
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 #include <GL/glx.h>
+#include <unistd.h>
 extern "C" {
   #include "fonts.h"
 }
@@ -44,14 +45,13 @@ extern "C" {
 #define BOX_HEIGHT 7
 #define BOX_WIDTH 60
 #define START_Y 320
-#define START_X 50
+#define START_X 80
 #define CIRCLE_RADIUS 150
 
 #define MAX_PARTICLES 100000
 #define GRAVITY 0.1
 #define rnd() (double)rand()/(double)RAND_MAX
 
-#include <unistd.h>
 
 //X Windows variables
 Display *dpy;
@@ -212,6 +212,8 @@ void init_opengl(void)
     glOrtho(0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, -1, 1);
     //Set the screen background color
     glClearColor(0.1, 0.1, 0.1, 1.0);
+	glEnable(GL_TEXTURE_2D);
+    initialize_fonts();
 }
 
 
@@ -223,8 +225,8 @@ void makeParticle(Game *game, int x, int y) {
     Particle *p = &game->particle[game->n];
     p->s.center.x = x;
     p->s.center.y = y;
-    p->velocity.y = rnd()*1.0 + 2;
-    p->velocity.x = 1.4 + rnd()*0.1;
+    p->velocity.y = rnd()*1.0 + 0.7;
+    p->velocity.x = 0.1;
     game->n++;
 }
 
@@ -283,6 +285,7 @@ void movement(Game *game)
             if (p->s.center.y < s->center.y + s->height && (p->s.center.x >= s->center.x - s->width && p->s.center.x <= s->center.x + s->width) && (p->s.center.y > s->center.y - s->height)){
                 p->velocity.y *= -.25;
                 p->s.center.y = s->center.y + s->height + 0.01;
+                p->velocity.x = 0.5;
             }
 
         }
@@ -357,7 +360,7 @@ void render(Game *game)
     for (int i=0; i<game->n; i++){
         //draw all particles here
         glPushMatrix();
-        glColor3ub(0,0,int(rnd() * 255));
+        glColor3ub(0,0,((int)100 + 155*rnd()));
         Vec *c = &game->particle[i].s.center;
         w = 2;
         h = 2;
@@ -372,41 +375,41 @@ void render(Game *game)
     
     //DRAW TEXTS:    
 	//glBindTexture(GL_TEXTURE_2D, 0);  
-	unsigned int cref = 0x00ffffff;
+	unsigned int cref = 0x00ff00ff;
     
     Rect r0;
-    r0.bot = 500;
-	r0.left = 450;
+    r0.bot = WINDOW_HEIGHT-20;
+	r0.left = 10;
     r0.center = 0;
-	ggprint12(&r0, 30, cref, "Waterfall Model");    
+	ggprint12(&r0, 70, cref, "Waterfall Model, BY: Keith Harryman");    
   
     Rect r1;
-    r1.bot = 600 - 60*2- 20;
-	r1.left = 1*80 + 90 + 0.3;
+    r1.bot = WINDOW_HEIGHT - WINDOW_HEIGHT/7 - BOX_HEIGHT;
+	r1.left = WINDOW_WIDTH/7 + 0.3 - BOX_WIDTH/2;
     r1.center = 0;
 	ggprint12(&r1, 30, cref, "Requirements");    
 	
 	Rect r2;
-    r2.bot = 600 - 60*3 - 20;
-	r2.left = 2*80 + 90 + 0.3;
+    r2.bot = WINDOW_HEIGHT - 2*WINDOW_HEIGHT/7 - BOX_HEIGHT;
+	r2.left = 2*WINDOW_WIDTH/7 + 0.3 - BOX_WIDTH/2;
     r2.center = 0;
 	ggprint12(&r2, 30, cref, "Design"); 
 	
 	Rect r3;
-    r3.bot = 600 - 60*3 - 20;
-	r3.left = 3*80 + 90 + 0.3;
+    r3.bot = WINDOW_HEIGHT - 3*WINDOW_HEIGHT/7 - BOX_HEIGHT;
+	r3.left = 3*WINDOW_WIDTH/7 + 0.3 - BOX_WIDTH/2;
     r3.center = 0;
 	ggprint12(&r3, 30, cref, "Coding");
 	
 	Rect r4;
-    r4.bot = 600 - 60*4 - 20;
-	r4.left = 4*80 + 90 + 0.3;
+    r4.bot = WINDOW_HEIGHT - 4*WINDOW_HEIGHT/7 - BOX_HEIGHT;
+	r4.left = 4*WINDOW_WIDTH/7 + 0.3 - BOX_WIDTH/2;
     r4.center = 0;
 	ggprint12(&r4, 30, cref, "Testing");
 	
 	Rect r5;
-    r5.bot = 600 - 60*5 - 20;
-	r5.left = 5*80 + 90 + 0.3;
+    r5.bot = WINDOW_HEIGHT - 5*WINDOW_HEIGHT/7 - BOX_HEIGHT;
+	r5.left = 5*WINDOW_WIDTH/7 + 0.3 - BOX_WIDTH/2;
     r5.center = 0;
 	ggprint12(&r5, 30, cref, "Maintenance");
     
